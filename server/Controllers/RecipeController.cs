@@ -1,15 +1,18 @@
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class RecipeController : ControllerBase
 {
     private readonly RecipeService _service;
     private readonly Auth0Provider _auth0Provider;
-    public RecipeController(RecipeService service)
+    public RecipeController(RecipeService service, Auth0Provider auth0Provider)
     {
         _service = service;
+        _auth0Provider = auth0Provider;
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public ActionResult<IEnumerable<Recipe>> GetRecipes()
     {
         try
@@ -24,6 +27,7 @@ public class RecipeController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public ActionResult<Recipe> GetById(int id)
     {
         try
@@ -38,7 +42,6 @@ public class RecipeController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize]
     public async Task<ActionResult<Recipe>> CreateRecipe([FromBody] Recipe recipe)
     {
         try

@@ -176,21 +176,21 @@
   }
 }
 
-input,
-textarea,
-select {
-  &:not(:placeholder-shown) {
-    &:valid {
-      outline: solid 1px transparentize($success, .65);
-      outline-offset: -2px;
-    }
+// input,
+// textarea,
+// select {
+//   &:not(:placeholder-shown) {
+//     &:valid {
+//       outline: solid 1px transparentize($success, .65);
+//       outline-offset: -2px;
+//     }
 
-    &:invalid {
-      outline: solid 1px transparentize($danger, .65);
-      outline-offset: -2px;
-    }
-  }
-}
+//     &:invalid {
+//       outline: solid 1px transparentize($danger, .65);
+//       outline-offset: -2px;
+//     }
+//   }
+// }
 
 form:invalid button[type="submit"] {
   color: var(--bs-btn-disabled-color);
