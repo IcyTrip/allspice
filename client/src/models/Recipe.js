@@ -5,5 +5,6 @@ export class Recipe{
         this.category = data.category;
         this.img = data.img;
         this.instructions = data.instructions;
+        this.creatorId = data.creatorId;
     }
 }

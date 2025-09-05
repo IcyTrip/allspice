@@ -17,7 +17,7 @@ function logout() {
 
 <template>
   <span class="navbar-text p-0">
-    <button class="btn selectable text-green" @click="login" v-if="!identity">
+    <button class="btn selectable text-light" @click="login" v-if="!identity">
       Login
     </button>
     <div v-else>
@@ -48,6 +48,7 @@ function logout() {
 
 <style lang="scss" scoped>
 .user-img {
+  aspect-ratio:1;
   height: 40px;
   width: 40px;
   border-radius: 100px;

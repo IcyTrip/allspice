@@ -2,6 +2,8 @@
 import { AppState } from '@/AppState';
 import Banner from '@/components/Banner.vue';
 import CreateRecipe from '@/components/CreateRecipe.vue';
+import RecipeCard from '@/components/RecipeCard.vue';
+import RecipeModal from '@/components/RecipeModal.vue';
 import { recipeService } from '@/services/RecipeService';
 import { watch } from 'vue';
 
@@ -15,22 +17,26 @@ import { watch } from 'vue';
       creatorId: AppState.identity?.sub
     }
 
-    recipeService.getRecipes();
-
+    
     // try{
-    //   const recipe = await recipeService.createRecipe(testRecipe);
-    //   console.log("Recipe created: ", recipe);
-    // } catch(err) {
-    //   console.error("Error creating recipe", err);
-    // }
-  });
+      //   const recipe = await recipeService.createRecipe(testRecipe);
+      //   console.log("Recipe created: ", recipe);
+      // } catch(err) {
+        //   console.error("Error creating recipe", err);
+        // }
+      });
+      recipeService.getRecipes();
 
 </script>
 
 <template>
   <div class="container">
-    <Banner />
+    <Banner/>
     <CreateRecipe />
+    <div class="px-4 d-flex justify-content-between flex-wrap">
+      <RecipeCard @click="console.log('clicked')" v-for="recipe in AppState.recipes" :key="recipe.id" :recipe="recipe" style="width:28%; margin-bottom:5.5rem;" />
+    </div>
+    <RecipeModal />
   </div>
 </template>
 

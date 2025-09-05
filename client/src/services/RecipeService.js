@@ -9,12 +9,13 @@ class RecipeService{
         const res = await api.get(`${allSpiceApi}/api/Recipe`);
         AppState.recipes.length = 0;
         res.data.forEach(recipe => {
-            AppState.recipes.push(new Recipe(recipe));
+            AppState.recipes.unshift(new Recipe(recipe));
         });
     }
 
     async createRecipe(data) {
         const res = await api.post(`${allSpiceApi}/api/Recipe`, data);
+        await this.getRecipes();
         return res.data;
     }
 
@@ -34,6 +35,23 @@ class RecipeService{
             return true;
         } catch {
             return false;
+        }
+    }
+
+    convertToCategory(id) {
+        switch(id+1) {
+            case 1:
+                return "Breakfast";
+            case 2:
+                return "Lunch";
+            case 3:
+                return "Dinner";
+            case 4:
+                return "Snack";
+            case 5:
+                return "Dessert";
+            default:
+                return "Miscellaneous";
         }
     }
 }
