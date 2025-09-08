@@ -1,5 +1,6 @@
 <script setup>
 import { AppState } from '@/AppState';
+import { favoriteService } from '@/services/FavoriteService';
 import { recipeService } from '@/services/RecipeService';
 import { logger } from '@/utils/Logger';
 
@@ -27,18 +28,35 @@ import { logger } from '@/utils/Logger';
     }
 
     function favorite() {
-        //TODO: Implement favorite functionality in backend and frontend
+        try{
+            favoriteService.createFavorite({ recipeId: props.recipe.id });
+        } catch(err) {
+            logger.error("Could not favorite this recipe",err);
+        }
+    }
+
+    function unfavorite() {
+        try{
+            const favorite = AppState.favorites.find(f => f.recipeId === props.recipe.id)
+            if(!favorite) return;
+
+            favoriteService.deleteFavorite(favorite.id);
+        } catch(err) {
+            logger.error("Could not unfavorite this recipe", err);
+        }
     }
 </script>
 
 <template>
     <div>
         <div v-if="props.recipe?.creatorId === AppState.account?.sub" class="recipeFavoriteCreator d-flex align-items-center justify-content-center flex-column px-1 m-2 z-0 position-relative">
-            <i @click="favorite()" class="mdi mdi-bookmark-outline fs-4 d-block" style="cursor:pointer; color:white;"></i>
+            <i v-if="!props.recipe.favorite" @click="favorite()" class="mdi mdi-bookmark-outline fs-4 d-block" style="cursor:pointer; color:white;"></i>
+            <i v-if="props.recipe.favorite" @click="unfavorite()" class="mdi mdi-bookmark fs-4 d-block" style="cursor:pointer; color:gold;"></i>
             <i @click="deleteRecipe()" class="mdi mdi-trash-can-outline fs-4 d-block text-danger" style="cursor:pointer;"></i>
         </div>
         <div v-if="props.recipe?.creatorId !== AppState.account?.sub" class="recipeFavorite d-flex justify-content-center px-1 m-2 z-0 position-relative">
-            <i @click.stop="favorite()" class="mdi mdi-bookmark-outline fs-4 d-block" style="cursor:pointer; color:white;"></i>
+            <i v-if="!props.recipe.favorite" @click="favorite()" class="mdi mdi-bookmark-outline fs-4 d-block" style="cursor:pointer; color:white;"></i>
+            <i v-if="props.recipe.favorite" @click="unfavorite()" class="mdi mdi-bookmark fs-4 d-block" style="cursor:pointer; color:gold;"></i>
         </div>
         <div class="recipeCardContainer d-flex flex-column justify-content-between z-1 position-relative bg-white" :style="{ backgroundImage: `url(${props.recipe.img})` }" data-bs-toggle="modal" data-bs-target="#recipeModal">
             <div class="d-flex justify-content-between">

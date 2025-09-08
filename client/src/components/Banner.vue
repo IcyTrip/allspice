@@ -1,5 +1,31 @@
 <script setup>
+import { recipeService } from '@/services/RecipeService';
 import Login from './Login.vue';
+import { logger } from '@/utils/Logger';
+
+    function getAll() {
+        try{
+            recipeService.getRecipes();
+        } catch(err) {
+            logger.error("Could not get recipes",err);
+        }
+    }
+
+    function getMyRecipes() {
+        try{
+            recipeService.getUserRecipes();
+        } catch(err) {
+            logger.error("Could not get user recipes",err);
+        }
+    }
+
+    function getFavorites() {
+        try{
+            recipeService.getFavoriteRecipes();
+        } catch(err) {
+            logger.error("Could not get favorite recipes",err);
+        }
+    }
 
 </script>
 
@@ -16,9 +42,9 @@ import Login from './Login.vue';
             <h4 class="text-border-transparent lh-base">Cherish Your Family<br>And Their Cooking</h4>
         </div>
         <div class="bannerLinks bg-light m-auto text-center fs-4 d-flex justify-content-between px-5 align-items-center" style="height:60px; width:40%;">
-            <a href="#" class="text-primary">Home</a>
-            <a href="#" class="text-primary">My Recipes</a>
-            <a href="#" class="text-primary">Favorites</a>
+            <a @click="getAll()" class="text-primary">Home</a>
+            <a @click="getMyRecipes()" class="text-primary">My Recipes</a>
+            <a @click="getFavorites()" class="text-primary">Favorites</a>
         </div>
     </div>
 </template>

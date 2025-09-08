@@ -14,7 +14,7 @@ CREATE TABLE Recipe (
   img VARCHAR(1000),
   category ENUM('Breakfast','Lunch','Dinner','Snack','Dessert') NOT NULL,
   creator_id VARCHAR(255),
-  FOREIGN KEY (creator_id) REFERENCES Account(id)
+  FOREIGN KEY (creator_id) REFERENCES Account(id) ON DELETE CASCADE
 );
 
 CREATE TABLE Ingredient (
@@ -23,7 +23,8 @@ CREATE TABLE Ingredient (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   name VARCHAR(255) NOT NULL,
   quantity VARCHAR(255),
-  FOREIGN KEY (recipe_id) REFERENCES Recipe(id)
+  recipe_id INT,
+  FOREIGN KEY (recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE
 );
 
 CREATE TABLE Favorite (
@@ -32,6 +33,6 @@ CREATE TABLE Favorite (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   recipe_id INT,
   account_id VARCHAR(255),
-  FOREIGN KEY (recipe_id) REFERENCES Recipe(id),
-  FOREIGN KEY (account_id) REFERENCES Account(id)
+  FOREIGN KEY (recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE,
+  FOREIGN KEY (account_id) REFERENCES Account(id) ON DELETE CASCADE
 );

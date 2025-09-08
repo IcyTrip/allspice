@@ -6,5 +6,6 @@ export class Recipe{
         this.img = data.img;
         this.instructions = data.instructions;
         this.creatorId = data.creatorId;
+        this.favorite = false;
     }
 }
