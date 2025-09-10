@@ -4,5 +4,6 @@ export class Ingredient {
         this.name = data.name;
         this.quantity = data.quantity;
         this.recipeId = data.recipeId;
+        this.recipe = data.recipe;
     }
 }

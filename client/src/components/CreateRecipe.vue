@@ -12,6 +12,8 @@ import { onMounted, ref } from 'vue';
     const ingredientName = ref('');
 
     const tempIngredients = ref([]);
+    const tempQuant = ref([]);
+    const tempName = ref([]);
 
     const isUrlValid = ref(false);
 
@@ -23,7 +25,8 @@ import { onMounted, ref } from 'vue';
                 img: img.value,
                 instructions: instructions.value
             };
-            recipeService.createRecipe(newRecipe);
+            const createdRecipe = await recipeService.createRecipe(newRecipe);
+            await createIngredients(createdRecipe.id);
         } catch(err) {
             logger.error("Could not create blog", err);
         }
@@ -31,15 +34,37 @@ import { onMounted, ref } from 'vue';
 
     function addIngredient() {
         tempIngredients.value.push(ingredientQuantity.value + " " + ingredientName.value);
+        tempQuant.value.push(ingredientQuantity.value);
+        tempName.value.push(ingredientName.value);
+
+        ingredientQuantity.value = '';
+        ingredientName.value = '';
     }
 
-    // async function createIngredients() {
-    //     try{
-            
-    //     } catch(err) {
-    //         logger.error("Could not create ingredients",err);
-    //     }
-    // }
+    async function createIngredients(recipeId) {
+        try{
+            for(let i = 0; i < tempIngredients.value.length; i++) {
+                const newIngredient = {
+                    name: tempName.value[i],
+                    quantity: tempQuant.value[i],
+                    recipeId: recipeId
+                }
+                ingredientService.createIngredient(newIngredient);
+            }
+            tempIngredients.value = [];
+            tempQuant.value = [];
+            tempName.value = [];
+            title.value = '';
+            category.value = '0';
+            img.value = '';
+            instructions.value = '';
+            ingredientQuantity.value = '';
+            ingredientName.value = '';
+
+        } catch(err) {
+            logger.error("Could not create ingredients",err);
+        }
+    }
     
     function checkUrl() {
         isUrlValid.value = recipeService.isValidUrl(img.value);
@@ -86,11 +111,13 @@ import { onMounted, ref } from 'vue';
                                 <div class="form-group mb-3">
                                     <label>Ingredients</label>
                                     <div class="d-flex gap-5">
-                                        <input type="number" class="form-control" placeholder="Quantity..." style="width:40%;" v-model="ingredientQuantity">
+                                        <input type="text" class="form-control" placeholder="Quantity..." style="width:40%;" v-model="ingredientQuantity">
                                         <input type="text" class="form-control" placeholder="Ingredient Name..." v-model="ingredientName">
                                         <button @click="addIngredient()" type="button" class="btn btn-primary rounded-circle" style="aspect-ratio:1/1;"><i class="mdi mdi-plus"></i></button>
                                     </div>
-                                    <p v-for="i in tempIngredients" :key="i" class="mb-1">{{ i }}</p>
+                                    <ul>
+                                        <li v-for="i in tempIngredients" :key="i" class="mb-1">{{ i }}</li>
+                                    </ul>
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="instructions">Instructions</label>

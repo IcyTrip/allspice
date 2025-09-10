@@ -8,5 +8,6 @@ public class Ingredient
     [MaxLength(255)] public string Name { get; set; }
     [MaxLength(255)] public string Quantity { get; set; }
     public int RecipeId { get; set; }
+    public Recipe Recipe { get; set; }
     
 }

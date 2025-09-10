@@ -10,33 +10,32 @@ public class IngredientsRepository
 
     public IEnumerable<Ingredient> GetAll()
     {
-        string sql = "SELECT * From Ingredient;";
-        return _db.Query<Ingredient>(sql).ToList();
+        string sql = @"SELECT Ingredient.*, Recipe.*
+        From Ingredient
+        JOIN Recipe ON Recipe.id = Ingredient.recipe_id;";
+        return _db.Query<Ingredient, Recipe, Ingredient>(sql, (ingredient, recipe) =>
+        {
+            ingredient.Recipe = recipe;
+            return ingredient;
+        }, splitOn: "id").ToList();
     }
 
     public Ingredient Create(Ingredient data)
     {
         string sql = @"
-        INSERT INTO Ingredient (id, created_at, updated_at, name, quantity, recipe_id)
-        VALUES (@Id, @CreatedAt, @UpdatedAt, @Name, @Quantity, @RecipeId);
-        SELECT Recipe.*, Ingredient.*
+        INSERT INTO Ingredient (name, quantity, recipe_id)
+        VALUES (@Name, @Quantity, @RecipeId);
+        SELECT Ingredient.*
         FROM Ingredient
-        JOIN Recipe ON Recipe.id = Ingredient.recipe_id
         WHERE Ingredient.id = LAST_INSERT_ID();";
 
-        Ingredient ingredient = _db.Query(sql, (Recipe recipe, Ingredient ingredient) =>
-        {
-            ingredient.RecipeId = recipe.Id;
-            return ingredient;
-        }, data).SingleOrDefault();
-
-        return ingredient;
+        return _db.Query<Ingredient>(sql, data).SingleOrDefault();
     }
 
-    public Ingredient GetById(int id)
+    public Ingredient GetById(int recipeId)
     {
-        string sql = "SELECT * FROM Ingredient WHERE Id = @id;";
-        return _db.QueryFirstOrDefault<Ingredient>(sql, new { id });
+        string sql = "SELECT * FROM Ingredient WHERE recipe_id = @RecipeId;";
+        return _db.QueryFirstOrDefault<Ingredient>(sql, new { recipeId });
     }
 
     public IEnumerable<Ingredient> GetAllById(int id)

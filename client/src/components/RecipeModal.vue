@@ -3,7 +3,7 @@ import { AppState } from '@/AppState';
 import { computed } from 'vue';
 
     const recipe = computed(() => AppState.activeRecipe);
-    const ingredients = computed(() => AppState.ingredients.filter(i => i.recipeId === recipe.value.id));
+    const ingredients = computed(() => AppState.ingredients.filter(i => i.recipeId === recipe.value?.id));
 
     function setDeleteRecipe() {
         AppState.deleteRecipe = recipe;
@@ -30,9 +30,11 @@ import { computed } from 'vue';
                             </div>
                             <button type="button" class="btn btn-close btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div>
-                            <p>{{ ingredients }}</p>
-                        </div>
+                        <ul>
+                            <li v-for="i in ingredients" :key="i.id">
+                                {{ i.quantity }} {{ i.name }}
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
