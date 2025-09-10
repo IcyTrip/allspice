@@ -51,8 +51,9 @@ public class RecipesRepository : IRepository<Recipe>
         updateData.Id = id;
         string sql = @"
         UPDATE Recipe
-        SET title = @Title, instructions = @Instructions, img = @Img, category = @Category, creator_id = @CreatorId
-        WHERE id = @id;";
+        SET instructions = @Instructions
+        WHERE id = @id;
+        SELECT * FROM Recipe WHERE id = @id;";
 
         return _db.QuerySingle<Recipe>(sql, updateData);
     }

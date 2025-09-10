@@ -46,7 +46,7 @@ public class IngredientsRepository
 
     public bool Delete(int id)
     {
-        int rows = _db.Execute("DELETE FROM Ingredient WHERE Id = @id;");
+        int rows = _db.Execute("DELETE FROM Ingredient WHERE Id = @id;", new { id });
         return rows > 0;
     }
 }

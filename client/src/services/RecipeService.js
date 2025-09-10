@@ -63,8 +63,8 @@ class RecipeService{
         AppState.favorites = AppState.favorites.filter(f => f.recipeId !== id);
     }
 
-    async updateRecipe(id, title, category, img, instructions) {
-        await api.put(`${allSpiceApi}/api/Recipe/${id}`, { title, category, img, instructions });
+    async updateRecipe(id, instructions) {
+        await api.put(`${allSpiceApi}/api/Recipe/${id}`, { instructions: instructions });
         await this.getRecipes();
     }
 

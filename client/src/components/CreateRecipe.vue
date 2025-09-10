@@ -51,15 +51,7 @@ import { onMounted, ref } from 'vue';
                 }
                 ingredientService.createIngredient(newIngredient);
             }
-            tempIngredients.value = [];
-            tempQuant.value = [];
-            tempName.value = [];
-            title.value = '';
-            category.value = '0';
-            img.value = '';
-            instructions.value = '';
-            ingredientQuantity.value = '';
-            ingredientName.value = '';
+            clearForm();
 
         } catch(err) {
             logger.error("Could not create ingredients",err);
@@ -68,6 +60,18 @@ import { onMounted, ref } from 'vue';
     
     function checkUrl() {
         isUrlValid.value = recipeService.isValidUrl(img.value);
+    }
+
+    function clearForm() {
+        tempIngredients.value = [];
+        tempQuant.value = [];
+        tempName.value = [];
+        title.value = '';
+        category.value = '0';
+        img.value = '';
+        instructions.value = '';
+        ingredientQuantity.value = '';
+        ingredientName.value = '';
     }
 
     onMounted(() => {
@@ -124,7 +128,7 @@ import { onMounted, ref } from 'vue';
                                     <textarea type="text" class="form-control" id="instructions" placeholder="Instructions..." style="min-height:200px;" v-model="instructions"></textarea>
                                 </div>
                                 <div class="form-group mb-1 d-flex gap-2">
-                                    <button :disabled="category === '0' || !isUrlValid || title == '' || instructions == ''" @click="createRecipe()" type="button" class="btn btn-primary" data-bs-dismiss="modal">Create Recipe</button>
+                                    <button :disabled="category === '0' || !isUrlValid || title == '' || instructions == '' || tempIngredients.length === 0" @click="createRecipe()" type="button" class="btn btn-primary" data-bs-dismiss="modal">Create Recipe</button>
                                     <button type="button" class="cancelButton btn" data-bs-dismiss="modal">Cancel</button>
                                 </div>
                             </form>

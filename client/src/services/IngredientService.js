@@ -28,7 +28,7 @@ class IngredientService{
         return res.data;
     }
 
-    async deleteRecipe(id) {
+    async deleteIngredient(id) {
         await api.delete(`${allSpiceApi}/api/Ingredient/${id}`);
         AppState.ingredients = AppState.ingredients.filter(i => i.id !== id);
     }
