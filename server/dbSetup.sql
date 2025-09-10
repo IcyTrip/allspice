@@ -36,3 +36,5 @@ CREATE TABLE Favorite (
   FOREIGN KEY (recipe_id) REFERENCES Recipe(id) ON DELETE CASCADE,
   FOREIGN KEY (account_id) REFERENCES Account(id) ON DELETE CASCADE
 );
+
+SELECT * FROM Ingredient WHERE id = @Id;

@@ -11,8 +11,15 @@ public class RecipesRepository : IRepository<Recipe>
 
     public IEnumerable<Recipe> GetAll()
     {
-        string sql = "SELECT * FROM Recipe;";
-        return _db.Query<Recipe>(sql).ToList();
+        string sql = @"SELECT Recipe.*, Account.*
+        FROM Recipe
+        JOIN Account ON Account.id = Recipe.creator_id
+        ORDER BY Recipe.id ASC;";
+        return _db.Query<Recipe, Account, Recipe>(sql, (recipe, account) =>
+        {
+            recipe.Creator = account;
+            return recipe;
+        }, splitOn: "id").ToList();
     }
 
     public Recipe Create(Recipe data)
@@ -20,18 +27,11 @@ public class RecipesRepository : IRepository<Recipe>
         string sql = @"
             INSERT INTO Recipe (title, instructions, img, category, creator_id)
             VALUES (@Title, @Instructions, @Img, @Category, @CreatorId);
-            SELECT Recipe.*, Account.*
+            SELECT Recipe.*
             FROM Recipe
-            JOIN Account ON Account.id = Recipe.creator_id
             WHERE Recipe.id = LAST_INSERT_ID();";
 
-        Recipe recipe = _db.Query(sql, (Recipe recipe, Account account) =>
-        {
-            recipe.CreatorId = account.Id;
-            return recipe;
-        }, data).SingleOrDefault();
-
-        return recipe;
+        return _db.Query<Recipe>(sql, data).SingleOrDefault();
     }
 
     public bool Delete(int id)

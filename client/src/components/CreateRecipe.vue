@@ -1,4 +1,5 @@
 <script setup>
+import { ingredientService } from '@/services/IngredientService';
 import { recipeService } from '@/services/RecipeService';
 import { logger } from '@/utils/Logger';
 import { onMounted, ref } from 'vue';
@@ -7,6 +8,10 @@ import { onMounted, ref } from 'vue';
     const category = ref('');
     const img = ref('');
     const instructions = ref('');
+    const ingredientQuantity = ref('');
+    const ingredientName = ref('');
+
+    const tempIngredients = ref([]);
 
     const isUrlValid = ref(false);
 
@@ -23,6 +28,18 @@ import { onMounted, ref } from 'vue';
             logger.error("Could not create blog", err);
         }
     }
+
+    function addIngredient() {
+        tempIngredients.value.push(ingredientQuantity.value + " " + ingredientName.value);
+    }
+
+    // async function createIngredients() {
+    //     try{
+            
+    //     } catch(err) {
+    //         logger.error("Could not create ingredients",err);
+    //     }
+    // }
     
     function checkUrl() {
         isUrlValid.value = recipeService.isValidUrl(img.value);
@@ -65,6 +82,15 @@ import { onMounted, ref } from 'vue';
                                     <label for="image">Image</label>
                                     <input @keyup="checkUrl()" type="text" class="form-control" id="image" placeholder='Image Url...' v-model="img">
                                     <p v-if="!isUrlValid" class="text-danger p-0 m-0" style="font-size:.8rem;">Link empty or not valid.</p>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label>Ingredients</label>
+                                    <div class="d-flex gap-5">
+                                        <input type="number" class="form-control" placeholder="Quantity..." style="width:40%;" v-model="ingredientQuantity">
+                                        <input type="text" class="form-control" placeholder="Ingredient Name..." v-model="ingredientName">
+                                        <button @click="addIngredient()" type="button" class="btn btn-primary rounded-circle" style="aspect-ratio:1/1;"><i class="mdi mdi-plus"></i></button>
+                                    </div>
+                                    <p v-for="i in tempIngredients" :key="i" class="mb-1">{{ i }}</p>
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="instructions">Instructions</label>

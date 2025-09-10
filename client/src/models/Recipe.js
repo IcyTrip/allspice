@@ -7,5 +7,6 @@ export class Recipe{
         this.instructions = data.instructions;
         this.creatorId = data.creatorId;
         this.favorite = false;
+        this.creator = data.creator;
     }
 }

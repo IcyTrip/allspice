@@ -19,14 +19,6 @@ import { logger } from '@/utils/Logger';
         }
     }
 
-    function deleteRecipe() {
-        try{
-            recipeService.deleteRecipe(props.recipe.id);
-        } catch(err) {
-            logger.error("Could not delete recipe",err);
-        }
-    }
-
     function favorite() {
         try{
             favoriteService.createFavorite({ recipeId: props.recipe.id });
@@ -45,6 +37,14 @@ import { logger } from '@/utils/Logger';
             logger.error("Could not unfavorite this recipe", err);
         }
     }
+
+    function setActiveRecipe() {
+        AppState.activeRecipe = props.recipe;
+    }
+
+    function setDeleteRecipe() {
+        AppState.deleteRecipe = props.recipe;
+    }
 </script>
 
 <template>
@@ -52,13 +52,13 @@ import { logger } from '@/utils/Logger';
         <div v-if="props.recipe?.creatorId === AppState.account?.sub" class="recipeFavoriteCreator d-flex align-items-center justify-content-center flex-column px-1 m-2 z-0 position-relative">
             <i v-if="!props.recipe.favorite" @click="favorite()" class="mdi mdi-bookmark-outline fs-4 d-block" style="cursor:pointer; color:white;"></i>
             <i v-if="props.recipe.favorite" @click="unfavorite()" class="mdi mdi-bookmark fs-4 d-block" style="cursor:pointer; color:gold;"></i>
-            <i @click="deleteRecipe()" class="mdi mdi-trash-can-outline fs-4 d-block text-danger" style="cursor:pointer;"></i>
+            <i @click="setDeleteRecipe()" class="mdi mdi-trash-can-outline fs-4 d-block text-danger" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#deleteModal"></i>
         </div>
         <div v-if="props.recipe?.creatorId !== AppState.account?.sub" class="recipeFavorite d-flex justify-content-center px-1 m-2 z-0 position-relative">
             <i v-if="!props.recipe.favorite" @click="favorite()" class="mdi mdi-bookmark-outline fs-4 d-block" style="cursor:pointer; color:white;"></i>
             <i v-if="props.recipe.favorite" @click="unfavorite()" class="mdi mdi-bookmark fs-4 d-block" style="cursor:pointer; color:gold;"></i>
         </div>
-        <div class="recipeCardContainer d-flex flex-column justify-content-between z-1 position-relative bg-white" :style="{ backgroundImage: `url(${props.recipe.img})` }" data-bs-toggle="modal" data-bs-target="#recipeModal">
+        <div @click="setActiveRecipe()" class="recipeCardContainer d-flex flex-column justify-content-between z-1 position-relative bg-white" :style="{ backgroundImage: `url(${props.recipe.img})` }" data-bs-toggle="modal" data-bs-target="#recipeModal">
             <div class="d-flex justify-content-between">
                 <div class="recipeCategory text-light w-auto d-inline-block rounded-pill m-2">
                     <p class="m-0 fw-semibold px-2">{{ convertToCategory(props.recipe.category) }}</p>
