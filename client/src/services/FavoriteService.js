@@ -5,6 +5,14 @@ import { Favorite } from "@/models/Favorite.js";
 
 class FavoriteService{
 
+    async getAllFavorites() {
+        const res = await api.get(`${allSpiceApi}/api/Favorite`);
+        AppState.allFavorites.length = 0;
+        res.data.forEach(favorite => {
+            AppState.allFavorites.unshift(new Favorite(favorite));
+        });
+    }
+
     async getFavorites() {
         const res = await api.get(`${allSpiceApi}/api/Favorite`);
         AppState.favorites.length = 0;
@@ -17,6 +25,7 @@ class FavoriteService{
                 matchingRecipe.favorite = true;
             }
         });
+        await this.getAllFavorites();
     }
 
     async createFavorite(data) {
@@ -40,6 +49,7 @@ class FavoriteService{
         if(matchingRecipe) {
             matchingRecipe.favorite = false;
         }
+        await this.getFavorites();
     }
 }
 

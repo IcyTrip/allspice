@@ -2,6 +2,11 @@
 import { recipeService } from '@/services/RecipeService';
 import Login from './Login.vue';
 import { logger } from '@/utils/Logger';
+import { ref, watch } from 'vue';
+import { AppState } from '@/AppState';
+
+    const search = ref('');
+    const categoryFilter = ref('All Categories');
 
     function getAll() {
         try{
@@ -27,13 +32,56 @@ import { logger } from '@/utils/Logger';
         }
     }
 
+    function searchRecipes() {
+        try{
+            recipeService.searchRecipes(search.value);
+        } catch(err) {
+            logger.error("Could not search recipes",err);
+        }
+    }
+
+    watch(categoryFilter, () => {
+        try{
+            recipeService.setActiveCategory(categoryFilter.value)
+            switch(AppState.activeFilter) {
+                case 0:
+                    recipeService.getRecipes();
+                    break;
+                case 1:
+                    recipeService.getUserRecipes();
+                    break;
+                case 2:
+                    recipeService.getFavoriteRecipes();
+                    break;
+                case 3:
+                    recipeService.searchRecipes(search.value);
+                    break;
+                default:
+                    recipeService.getRecipes();
+                    break;
+            }
+        } catch(err) {
+            logger.error("Could not filter categories",err);
+        }
+    });
 </script>
 
 <template>
     <div class="bannerContainer mt-4 mb-5 text-sahitya">
-        <div class="w-100 clearfix">
-            <div class="d-flex m-3 gap-4 float-end" style="width:25%;">
-                <input type="text" class="searchField form-control float-end" placeholder="Search...">
+        <div class="w-100 d-flex justify-content-between">
+            <div class="dropdown m-3">
+                <button type="button" class="btn btn-light dropdown-toggle" id="filterCategoryButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> {{ categoryFilter }} </button>
+                <div class="dropdown-menu" aria-labelledby="filterCategoryButton">
+                    <a class="dropdown-item" @click="categoryFilter = 'All Categories'">All Categories</a>
+                    <a class="dropdown-item" @click="categoryFilter = 'Breakfast'">Breakfast</a>
+                    <a class="dropdown-item" @click="categoryFilter = 'Lunch'">Lunch</a>
+                    <a class="dropdown-item" @click="categoryFilter = 'Dinner'">Dinner</a>
+                    <a class="dropdown-item" @click="categoryFilter = 'Snack'">Snack</a>
+                    <a class="dropdown-item" @click="categoryFilter = 'Dessert'">Dessert</a>
+                </div>
+            </div>
+            <div class="d-flex m-3 gap-4" style="width:25%;">
+                <input @input="searchRecipes()" type="text" class="searchField form-control float-end" placeholder="Search..." v-model="search">
                 <Login />
             </div>
         </div>
@@ -81,6 +129,12 @@ import { logger } from '@/utils/Logger';
         }
         a:hover{
             text-decoration:underline;
+        }
+    }
+
+    .dropdown{
+        a{
+            cursor:pointer;
         }
     }
 </style>

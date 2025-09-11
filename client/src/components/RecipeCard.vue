@@ -3,6 +3,9 @@ import { AppState } from '@/AppState';
 import { favoriteService } from '@/services/FavoriteService';
 import { recipeService } from '@/services/RecipeService';
 import { logger } from '@/utils/Logger';
+import { computed } from 'vue';
+
+    const favorites = computed(() => AppState.allFavorites.filter(f => f.recipeId === props.recipe.id).length);
 
     const props = defineProps({
         recipe: {
@@ -63,6 +66,9 @@ import { logger } from '@/utils/Logger';
                 <div class="recipeCategory text-light w-auto d-inline-block rounded-pill m-2">
                     <p class="m-0 fw-semibold px-2">{{ convertToCategory(props.recipe.category) }}</p>
                 </div>
+                <div class="recipeFavorites text-light w-auto d-inline-block rounded-pill m-2">
+                    <p class="m-0 fw-semibold px-2">{{ favorites }} <i class="mdi mdi-bookmark" :style="props.recipe.favorite ? { 'color':'gold' } : { 'color':'white' }"></i></p>
+                </div>
             </div>
             <div class="m-2">
                 <p class="recipeTitle m-0 fw-semibold px-2 text-light fs-3">{{ props.recipe.title }}</p>
@@ -87,11 +93,11 @@ import { logger } from '@/utils/Logger';
         filter:brightness(0.9);
     }
 
-    .recipeCategory{
+    .recipeCategory, .recipeFavorites{
         max-width:fit-content;
     }
 
-    .recipeCategory, .recipeTitle{
+    .recipeCategory, .recipeTitle, .recipeFavorites{
         background-color: rgba(0, 0, 0, 0.3);
         padding: 8px;
         border-radius: 3px;

@@ -49,7 +49,7 @@ import { onMounted, ref } from 'vue';
                     quantity: tempQuant.value[i],
                     recipeId: recipeId
                 }
-                ingredientService.createIngredient(newIngredient);
+                await ingredientService.createIngredient(newIngredient);
             }
             clearForm();
 

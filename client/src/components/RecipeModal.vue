@@ -10,8 +10,10 @@ import { computed, ref } from 'vue';
     const editing = ref(false);
     const tempInstructions = ref('');
     const tempIngredients = ref([]);
-
     const del = ref(null);
+    const ingredientQuantity = ref('');
+    const ingredientName = ref('');
+    const addedIngredients = ref([]);
 
     function setDeleteRecipe() {
         AppState.deleteRecipe = recipe;
@@ -27,6 +29,7 @@ import { computed, ref } from 'vue';
 
     function editRecipe() {
         try{
+            addedIngredients.value = [];
             recipeService.updateRecipe(recipe.value.id, recipe.value.instructions);
             if(tempIngredients.value.length != 0) {
                 for(let i = 0; i < tempIngredients.value.length; i++) {
@@ -41,7 +44,12 @@ import { computed, ref } from 'vue';
 
     function deleteIngredient(id) {
         try{
-            tempIngredients.value.push(id);
+            if(tempIngredients.value.includes(id)) {
+                tempIngredients.value = tempIngredients.value.filter(i => i.id === id);
+            }
+            else{
+                tempIngredients.value.push(id);
+            }
         } catch(err) {
             logger.error("Could not delete recipe",err);
         }
@@ -57,13 +65,30 @@ import { computed, ref } from 'vue';
         tempInstructions.value = '';
         tempIngredients.value = [];
         editing.value = false;
+        try{
+            addedIngredients.value.forEach(i => {
+                ingredientService.deleteIngredient(i.id);
+            });
+        } catch(err) {
+            logger.error("Could not delete ingredient",err);
+        }
     }
 
-
-
-    //TODO: show the user that the list item they clicked delete on will be deleted if changed saved i.e. a strikethrough or something
-
-
+    async function addIngredient() {
+        try{
+            const newIngredient = {
+                name: ingredientName.value,
+                quantity: ingredientQuantity.value,
+                recipeId: recipe.value.id
+            }
+            const createdIngredient = await ingredientService.createIngredient(newIngredient);
+            addedIngredients.value.push(createdIngredient);
+            ingredientQuantity.value = '';
+            ingredientName.value = '';
+        } catch(err) {
+            logger.error("Could not add ingredient",err);
+        }
+    }
 
 </script>
 
@@ -79,7 +104,7 @@ import { computed, ref } from 'vue';
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center">
                                 <h2 class="text-primary m-0">{{ recipe?.title }}</h2>
-                                <button type="button" class="btn btn-primary dropdown-toggle px-3 py-1 mx-4" id="dropdownButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="mdi mdi-pencil fs-5"></i></button>
+                                <button v-if="recipe?.creatorId === AppState.account?.sub" type="button" class="btn btn-primary dropdown-toggle px-3 py-1 mx-4" id="dropdownButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="mdi mdi-pencil fs-5"></i></button>
                                 <div class="dropdown-menu py-0" aria-labelledby="dropdownButton">
                                     <a @click="beginEditing()" class="dropdown-item py-0 border-bottom">Edit Recipe</a>
                                     <a @click="setDeleteRecipe()" class="dropdown-item py-0 text-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete Recipe</a>
@@ -91,11 +116,18 @@ import { computed, ref } from 'vue';
                         <p class="bg-secondary text-light w-auto d-inline-block rounded-pill px-2 fw-semibold">{{ convertToCategory() }}</p>
                         <h3>Ingredients</h3>
                         <ul :style="[editing ? { 'padding-left':'0' } : {}]">
-                            <li v-for="i in ingredients" :key="i.id" :style="[editing ? { 'list-style-type':'none' } : {}]">
+                            <li v-for="i in ingredients.sort((a,b) => a.id - b.id)" :key="i.id" :style="[editing ? { 'list-style-type':'none' } : {}, tempIngredients.includes(i.id) ? { 'text-decoration':'line-through' } : {}]">
                                 <i @click="deleteIngredient(i.id)" @mouseover="del = i.id" @mouseleave="del = null" v-if="editing" :class="del === i.id ? 'mdi mdi-delete-empty text-danger' : 'mdi mdi-delete text-danger'" style="padding-right:16px"></i>
                                 {{ i.quantity }} {{ i.name }}
                             </li>
                         </ul>
+                        <form v-if="editing">
+                            <div class="form-group d-flex gap-5">
+                                <input type="text" class="form-control w-50" placeholder="Quantity..." v-model="ingredientQuantity">
+                                <input type="text" class="form-control" placeholder="Name..." v-model="ingredientName">
+                                <button @click="addIngredient()" type="button" class="btn btn-primary rounded-circle" style="aspect-ratio:1/1;"><i class="mdi mdi-plus"></i></button>
+                            </div>
+                        </form>
                         <h3>Instructions</h3>
                         <p v-if="!editing" style="white-space:pre-line;">{{ recipe?.instructions }}</p>
                         <div v-if="editing">

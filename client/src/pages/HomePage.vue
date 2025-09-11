@@ -22,7 +22,7 @@ import { watch } from 'vue';
 <template>
   <div class="container">
     <Banner/>
-    <CreateRecipe />
+    <CreateRecipe v-if="AppState.account" />
     <div class="px-4 d-flex justify-content-center flex-wrap" style="gap:0 5rem;">
       <RecipeCard v-for="recipe in AppState.recipes" :key="recipe.id" :recipe="recipe" style="width:28%; margin-bottom:.5rem;" />
     </div>
