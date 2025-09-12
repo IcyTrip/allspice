@@ -6,7 +6,7 @@ import { Favorite } from "@/models/Favorite.js";
 class FavoriteService{
 
     async getAllFavorites() {
-        const res = await api.get(`${allSpiceApi}/api/Favorite`);
+        const res = await api.get(`${allSpiceApi}/api/Favorites`);
         AppState.allFavorites.length = 0;
         res.data.forEach(favorite => {
             AppState.allFavorites.unshift(new Favorite(favorite));
@@ -14,7 +14,7 @@ class FavoriteService{
     }
 
     async getFavorites() {
-        const res = await api.get(`${allSpiceApi}/api/Favorite`);
+        const res = await api.get(`${allSpiceApi}/api/Favorites`);
         AppState.favorites.length = 0;
         res.data.forEach(favorite => {
             if(favorite.accountId !== AppState.account?.sub) return;
@@ -29,18 +29,18 @@ class FavoriteService{
     }
 
     async createFavorite(data) {
-        const res = await api.post(`${allSpiceApi}/api/Favorite`, data);
+        const res = await api.post(`${allSpiceApi}/api/Favorites`, data);
         await this.getFavorites();
         return res.data;
     }
 
     async getFavoriteById(id) {
-        const res = await api.get(`${allSpiceApi}/api/Favorite/${id}`);
+        const res = await api.get(`${allSpiceApi}/api/Favorites/${id}`);
         return res.data;
     }
 
     async deleteFavorite(id) {
-        await api.delete(`${allSpiceApi}/api/Favorite/${id}`);
+        await api.delete(`${allSpiceApi}/api/Favorites/${id}`);
         const favorite = AppState.favorites.find(f => f.id === id);
 
         AppState.favorites = AppState.favorites.filter(f => f.id !== id);

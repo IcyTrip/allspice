@@ -1,11 +1,11 @@
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class IngredientController : ControllerBase
+public class IngredientsController : ControllerBase
 {
     private readonly IngredientService _service;
     private readonly Auth0Provider _auth0Provider;
-    public IngredientController(IngredientService service, Auth0Provider auth0Provider)
+    public IngredientsController(IngredientService service, Auth0Provider auth0Provider)
     {
         _service = service;
         _auth0Provider = auth0Provider;

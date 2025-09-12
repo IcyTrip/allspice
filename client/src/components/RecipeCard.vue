@@ -1,7 +1,6 @@
 <script setup>
 import { AppState } from '@/AppState';
 import { favoriteService } from '@/services/FavoriteService';
-import { recipeService } from '@/services/RecipeService';
 import { logger } from '@/utils/Logger';
 import { computed } from 'vue';
 
@@ -13,14 +12,6 @@ import { computed } from 'vue';
             required: true
         }
     });
-
-    function convertToCategory(id) {
-        try{
-            return recipeService.convertToCategory(id);
-        } catch(err) {
-            logger.error("Could not convert to category",err);
-        }
-    }
 
     function favorite() {
         try{
@@ -64,7 +55,7 @@ import { computed } from 'vue';
         <div @click="setActiveRecipe()" class="recipeCardContainer d-flex flex-column justify-content-between z-1 position-relative bg-white" :style="{ backgroundImage: `url(${props.recipe.img})` }" data-bs-toggle="modal" data-bs-target="#recipeModal">
             <div class="d-flex justify-content-between">
                 <div class="recipeCategory text-light w-auto d-inline-block rounded-pill m-2">
-                    <p class="m-0 fw-semibold px-2">{{ convertToCategory(props.recipe.category) }}</p>
+                    <p class="m-0 fw-semibold px-2">{{ props.recipe.category }}</p>
                 </div>
                 <div class="recipeFavorites text-light w-auto d-inline-block rounded-pill m-2">
                     <p class="m-0 fw-semibold px-2">{{ favorites }} <i class="mdi mdi-bookmark" :style="props.recipe.favorite ? { 'color':'gold' } : { 'color':'white' }"></i></p>

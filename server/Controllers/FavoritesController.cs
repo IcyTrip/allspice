@@ -1,11 +1,11 @@
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class FavoriteController : ControllerBase
+public class FavoritesController : ControllerBase
 {
     private readonly FavoriteService _service;
     private readonly Auth0Provider _auth0Provider;
-    public FavoriteController(FavoriteService service, Auth0Provider auth0Provider)
+    public FavoritesController(FavoriteService service, Auth0Provider auth0Provider)
     {
         _service = service;
         _auth0Provider = auth0Provider;

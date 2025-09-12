@@ -1,11 +1,11 @@
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class RecipeController : ControllerBase
+public class RecipesController : ControllerBase
 {
     private readonly RecipeService _service;
     private readonly Auth0Provider _auth0Provider;
-    public RecipeController(RecipeService service, Auth0Provider auth0Provider)
+    public RecipesController(RecipeService service, Auth0Provider auth0Provider)
     {
         _service = service;
         _auth0Provider = auth0Provider;
@@ -33,6 +33,10 @@ public class RecipeController : ControllerBase
         try
         {
             var recipe = _service.GetRecipeById(id);
+            if (recipe == null)
+            {
+                return BadRequest("Recipe does not exist.");
+            }
             return Ok(recipe);
         }
         catch (Exception e)
@@ -64,6 +68,10 @@ public class RecipeController : ControllerBase
         try
         {
             var result = _service.DeleteRecipe(id);
+            if (!result)
+            {
+                return BadRequest("Error deleting recipe.");
+            }
             return Ok(result);
         }
         catch (Exception e)

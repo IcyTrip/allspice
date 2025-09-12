@@ -6,7 +6,7 @@ import { Recipe } from "@/models/Recipe.js";
 class RecipeService{
 
     async getRecipes() {
-        const res = await api.get(`${allSpiceApi}/api/Recipe`);
+        const res = await api.get(`${allSpiceApi}/api/Recipes`);
         AppState.recipes.length = 0;
         res.data.forEach(recipe => {
             if(AppState.searchCat === 6 || AppState.searchCat === recipe.category) {
@@ -21,7 +21,7 @@ class RecipeService{
     }
     
     async getUserRecipes() {
-        const res = await api.get(`${allSpiceApi}/api/Recipe`);
+        const res = await api.get(`${allSpiceApi}/api/Recipes`);
         AppState.recipes.length = 0;
         res.data.forEach(recipe => {
             if(AppState.account?.sub === recipe.creatorId && (AppState.searchCat === 6 || AppState.searchCat === recipe.category)) {
@@ -36,7 +36,7 @@ class RecipeService{
     }
 
     async getFavoriteRecipes() {
-        const res = await api.get(`${allSpiceApi}/api/Recipe`);
+        const res = await api.get(`${allSpiceApi}/api/Recipes`);
         AppState.recipes.length = 0;
         res.data.forEach(recipe => {
             AppState.favorites.forEach(favorite => {
@@ -51,7 +51,7 @@ class RecipeService{
     }
 
     async searchRecipes(search) {
-        const res = await api.get(`${allSpiceApi}/api/Recipe`);
+        const res = await api.get(`${allSpiceApi}/api/Recipes`);
         AppState.recipes.length = 0;
         res.data.forEach(recipe => {
             if(recipe.title.toLowerCase().includes(search.toLowerCase()) || search === '') {
@@ -68,25 +68,25 @@ class RecipeService{
     }
 
     async getRecipeById(id) {
-        const res = await api.get(`${allSpiceApi}/api/Recipe/${id}`);
+        const res = await api.get(`${allSpiceApi}/api/Recipes/${id}`);
         return res.data;
     }
 
     async createRecipe(data) {
-        const res = await api.post(`${allSpiceApi}/api/Recipe`, data);
+        const res = await api.post(`${allSpiceApi}/api/Recipes`, data);
         await this.getRecipes();
         return res.data;
     }
 
     async deleteRecipe(id) {
 
-        await api.delete(`${allSpiceApi}/api/Recipe/${id}`);
+        await api.delete(`${allSpiceApi}/api/Recipes/${id}`);
         AppState.recipes = AppState.recipes.filter(r => r.id !== id);
         AppState.favorites = AppState.favorites.filter(f => f.recipeId !== id);
     }
 
     async updateRecipe(id, instructions) {
-        await api.put(`${allSpiceApi}/api/Recipe/${id}`, { instructions: instructions });
+        await api.put(`${allSpiceApi}/api/Recipes/${id}`, { instructions: instructions });
         await this.getRecipes();
     }
 
@@ -96,23 +96,6 @@ class RecipeService{
             return true;
         } catch {
             return false;
-        }
-    }
-
-    convertToCategory(id) {
-        switch(id+1) {
-            case 1:
-                return "Breakfast";
-            case 2:
-                return "Lunch";
-            case 3:
-                return "Dinner";
-            case 4:
-                return "Snack";
-            case 5:
-                return "Dessert";
-            default:
-                return "Miscellaneous";
         }
     }
 

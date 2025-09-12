@@ -31,7 +31,8 @@ public class RecipesRepository : IRepository<Recipe>
             FROM Recipe
             WHERE Recipe.id = LAST_INSERT_ID();";
 
-        return _db.Query<Recipe>(sql, data).SingleOrDefault();
+        int id = _db.ExecuteScalar<int>(sql, data);
+        return GetById(id);
     }
 
     public bool Delete(int id)
@@ -42,8 +43,16 @@ public class RecipesRepository : IRepository<Recipe>
 
     public Recipe GetById(int id)
     {
-        string sql = "SELECT * FROM Recipe WHERE Id = @id;";
-        return _db.QueryFirstOrDefault<Recipe>(sql, new { id });
+        string sql = @"
+        SELECT Recipe.*, Account.*
+        FROM Recipe
+        JOIN Account ON Account.id = Recipe.creator_id
+        WHERE Recipe.id = @id;";
+        return _db.Query<Recipe, Account, Recipe>(sql, (recipe, account) =>
+        {
+            recipe.Creator = account;
+            return recipe;
+        }, new { id },splitOn: "id").FirstOrDefault();
     }
 
     public Recipe Update(int id, Recipe updateData)
@@ -51,10 +60,23 @@ public class RecipesRepository : IRepository<Recipe>
         updateData.Id = id;
         string sql = @"
         UPDATE Recipe
-        SET instructions = @Instructions
+        SET
+            title = @Title,
+            instructions = @Instructions,
+            img = @Img,
+            category = @Category
         WHERE id = @id;
         SELECT * FROM Recipe WHERE id = @id;";
 
-        return _db.QuerySingle<Recipe>(sql, updateData);
+        var parameters = new
+        {
+            updateData.Id,
+            updateData.Title,
+            updateData.Instructions,
+            updateData.Img,
+            Category = updateData.Category.ToString()
+        };
+
+        return _db.QuerySingleOrDefault<Recipe>(sql, parameters);
     }
 }

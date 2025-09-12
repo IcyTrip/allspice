@@ -19,14 +19,6 @@ import { computed, ref } from 'vue';
         AppState.deleteRecipe = recipe;
     }
 
-    function convertToCategory() {
-        try{
-            return recipeService.convertToCategory(recipe.value?.category);
-        } catch(err) {
-            logger.error("Could not convert to category",err);
-        }
-    }
-
     function editRecipe() {
         try{
             addedIngredients.value = [];
@@ -113,7 +105,7 @@ import { computed, ref } from 'vue';
                             <button @click="cancelEditing();" type="button" class="btn btn-close btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <p class="text-secondary">By: {{ recipe?.creator.name }}</p>
-                        <p class="bg-secondary text-light w-auto d-inline-block rounded-pill px-2 fw-semibold">{{ convertToCategory() }}</p>
+                        <p class="bg-secondary text-light w-auto d-inline-block rounded-pill px-2 fw-semibold">{{ recipe?.category }}</p>
                         <h3>Ingredients</h3>
                         <ul :style="[editing ? { 'padding-left':'0' } : {}]">
                             <li v-for="i in ingredients.sort((a,b) => a.id - b.id)" :key="i.id" :style="[editing ? { 'list-style-type':'none' } : {}, tempIngredients.includes(i.id) ? { 'text-decoration':'line-through' } : {}]">
